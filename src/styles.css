@@ -1,0 +1,241 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* over all */
+.weather {
+  background: #f1f3f8;
+  border: 1px solid;
+  border-color: #8d93ab;
+  border-radius: 10px;
+  /* height: 730px; */
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 15px 20px;
+}
+
+.unit {
+  padding-top: 30px;
+  padding-left: 30px;
+}
+
+.heat {
+  display: inline-block;
+  position: relative;
+  color: #393b44;
+  font-size: 16px;
+  font-weight: 600;
+  top: -20px;
+}
+
+/* current button */
+.current-button {
+  margin: 0 0 8px 8px;
+}
+
+/* toggle switch */
+.switch {
+  position: relative;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  background: #d6e0f0;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  top: 4px;
+  left: 4px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+  transition: 0.4s;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+  transition: 0.4s;
+}
+
+/* current weather */
+.current {
+  height: 350px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.current img {
+  display: block;
+  height: 350px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.status {
+  position: relative;
+  top: -345px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  border: 1px dashed #8d93ab;
+  margin: 0px auto;
+}
+
+.current h1 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  padding-top: 30px;
+}
+
+.current p {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 200;
+  margin: 0;
+}
+
+.current-temperature {
+  display: block;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  margin: 10px;
+}
+
+.current-temperature-max {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.current-temperature-min {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.current-weather-icon {
+  padding: 0px;
+}
+.weather-icon-current {
+  font-size: 44px;
+  text-align: center;
+}
+
+.current-weather-text {
+  display: block;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  margin: 10px;
+}
+
+.current-precipitation {
+  display: block;
+  text-align: right;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.current-wind {
+  display: block;
+  text-align: left;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+/* weather forecast: every 3 hours */
+.forecast-hour {
+  color: #393b44;
+  /*  height: 90px; */
+  margin-top: 30px;
+}
+
+.fcst-hour {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hour {
+  font-size: 14px;
+}
+
+.weather-icon-hour {
+  margin: 5px auto;
+  font-size: 26px;
+}
+
+.temperature {
+  margin: 5px auto;
+  font-size: 13px;
+}
+
+.tmp-high {
+  font-weight: bold;
+}
+
+.tmp-low {
+  font-weight: bold;
+  opacity: 50%;
+}
+
+.bar {
+  display: block;
+  width: 80%;
+  height: 1px;
+  background-color: #d6e0f0;
+  border: 0;
+}
+
+/* weather forecaset: next 5 days */
+.forecast-day {
+  color: #393b44;
+  /*  height: 90px; */
+}
+
+.fcst-day {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.day {
+  font-size: 14px;
+}
+
+.fcst-day-01 {
+  margin: 30px auto;
+}
+
+.fcst-day-02 {
+  margin: 20px auto;
+}
+
+.weather-icon-day {
+  font-size: 26px;
+}
