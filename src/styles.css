@@ -239,3 +239,8 @@ input:checked + .slider:before {
 .weather-icon-day {
   font-size: 26px;
 }
+
+.footer-link {
+  margin-top: -45px;
+  margin-left: 155px;
+}
