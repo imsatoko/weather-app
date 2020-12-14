@@ -4,6 +4,14 @@ const apiEndpoint = "https://api.openweathermap.org/data/2.5";
 let units = "metric";
 
 /** functions */
+// init
+function init() {
+  let currentDate = document.querySelector("#current_date");
+  currentDate.innerHTML = getCurrentDate();
+  showCurrentWeather("tokyo");
+  showHourlyForecast("tokyo");
+}
+
 // get current date
 function getCurrentDate() {
   let current = new Date();
@@ -115,8 +123,8 @@ function setCurrentWeather(response) {
   let result = response.data;
 
   // city name
-  let currentCityElement = document.querySelector("#current_city");
-  currentCityElement.innerHTML = result.name;
+  document.querySelector("#current_city").innerHTML = result.name;
+  document.querySelector("#city-input").value = result.name;
 
   // current temperature
   let temp = appendDegreeSign(Math.round(result.main.temp), true);
@@ -367,9 +375,7 @@ function appendDegreeSign(temp, isAppend) {
 }
 
 /** main */
-// current date
-let currentDate = document.querySelector("#current_date");
-currentDate.innerHTML = getCurrentDate();
+init();
 
 // search weather
 let searchCityForm = document.querySelector("#search-city-form");
