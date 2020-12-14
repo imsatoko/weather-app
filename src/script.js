@@ -135,11 +135,11 @@ function setCurrentWeather(response) {
   document.querySelector(".current-temperature-max span").innerHTML = maxTemp;
   document.querySelector(".current-temperature-min span").innerHTML = minTemp;
 
-  // current weather, precipitation and wind speed(m/s)
+  // current weather and wind speed(m/s)
   let currentWeatherElement = document.querySelector(".current-weather-text");
   currentWeatherElement.innerHTML = result.weather[0].main;
 
-  let windSpeedElement = document.querySelector(".current-wind");
+  let windSpeedElement = document.querySelector("#wind-speed");
   windSpeedElement.innerHTML = `${result.wind.speed}m/s`;
 }
 
@@ -172,6 +172,10 @@ function displayHourlyForecast(response) {
   let forecastMaxTempElement = document.querySelectorAll(".tmp-high");
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
 
+  // display precipitation (precipitation[=pop] can get via "5 hours/3 days forecast" API)
+  displayPrecipitation(result[0].pop);
+
+  // display hourly forecast (every 3 hour)
   for (let i = 0; i < result.length; i++) {
     if (i > 0) {
       hour = hour + 3;
@@ -192,6 +196,11 @@ function displayHourlyForecast(response) {
   }
 
   showDailyForecast(city.coord.lat, city.coord.lon);
+}
+
+function displayPrecipitation(precipitation) {
+  let precipitationElement = document.querySelector("#precipitation");
+  precipitationElement.innerHTML = `${Math.round(precipitation * 10) * 10}%`;
 }
 
 function displayDailyForecast(response) {
