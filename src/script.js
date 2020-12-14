@@ -62,6 +62,84 @@ function formatHHmm(hour, minute) {
   return `${hour}:${minute}`;
 }
 
+function formatDayWeatherIcon(main, description) {
+  let icons = {
+    "clear sky": "fas fa-sun",
+    "few clouds": "fas fa-cloud-sun",
+    "scattered clouds": "fas fa-cloud-sun",
+    "broken clouds": "fas fa-cloud",
+    "overcast clouds": "fas fa-cloud",
+    "freezing rain": "fas fa-snowflake",
+  };
+
+  icon = icons[description];
+
+  if (!icon) {
+    icon = formatDayWeatherIconMain(main);
+  }
+
+  return icon;
+}
+
+function formatNightWeatherIcon(main, description) {
+  let icons = {
+    "clear sky": "fas fa-moon",
+    "few clouds": "fas fa-cloud-moon",
+    "scattered clouds": "fas fa-cloud-moon",
+    "broken clouds": "fas fa-cloud",
+    "overcast clouds": "fas fa-cloud",
+    "freezing rain": "fas fa-snowflake",
+  };
+
+  icon = icons[description];
+
+  if (!icon) {
+    icon = formatNightWeatherIconMain(main);
+  }
+
+  return icon;
+}
+
+function formatDayWeatherIconMain(main) {
+  let icons = {
+    Rain: "fas fa-cloud-sun-rain",
+    Snow: "fas fa-snowflake",
+    Drizzle: "fas fa-cloud-sun-rain",
+    Thunderstorm: "fas fa-bolt",
+    Mist: "fas fa-cloud",
+    Smoke: "fas fa-cloud",
+    Haze: "fas fa-cloud",
+    Dust: "fas fa-cloud",
+    Fog: "fas fa-cloud",
+    Sand: "fas fa-cloud",
+    Ash: "fas fa-cloud",
+    Squall: "fas fa-cloud",
+    Tornado: "fas fa-cloud",
+  };
+
+  return icons[main];
+}
+
+function formatNightWeatherIconMain(main) {
+  let icons = {
+    Rain: "fas fa-cloud-moon-rain",
+    Snow: "fas fa-snowflake",
+    Drizzle: "fas fa-cloud-moon-rain",
+    Thunderstorm: "fas fa-bolt",
+    Mist: "fas fa-cloud",
+    Smoke: "fas fa-cloud",
+    Haze: "fas fa-cloud",
+    Dust: "fas fa-cloud",
+    Fog: "fas fa-cloud",
+    Sand: "fas fa-cloud",
+    Ash: "fas fa-cloud",
+    Squall: "fas fa-cloud",
+    Tornado: "fas fa-cloud",
+  };
+
+  return icons[main];
+}
+
 // get current location weather
 function searchCurrentLocation(event) {
   event.preventDefault();
@@ -139,6 +217,14 @@ function setCurrentWeather(response) {
   let currentWeatherElement = document.querySelector(".current-weather-text");
   currentWeatherElement.innerHTML = result.weather[0].main;
 
+  let currentWeatherIconElement = document.querySelector(
+    ".weather-icon-current"
+  );
+  currentWeatherIconElement.className = `${formatNightWeatherIcon(
+    result.weather[0].main,
+    result.weather[0].description
+  )} weather-icon-current`;
+
   let windSpeedElement = document.querySelector("#wind-speed");
   windSpeedElement.innerHTML = `${result.wind.speed}m/s`;
 }
@@ -171,17 +257,25 @@ function displayHourlyForecast(response) {
   let hourElement = document.querySelectorAll(".hour");
   let forecastMaxTempElement = document.querySelectorAll(".tmp-high");
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
+  let weatherIconHourElement = document.querySelectorAll(".weather-icon-hour");
 
   // display precipitation (precipitation[=pop] can get via "5 hours/3 days forecast" API)
   displayPrecipitation(result[0].pop);
 
   // display hourly forecast (every 3 hour)
+  let isDay = true;
   for (let i = 0; i < result.length; i++) {
     if (i > 0) {
       hour = hour + 3;
       if (hour === 24) {
         hour = 0;
       }
+    }
+
+    if (hour >= 6 && hour < 18) {
+      isDay = true;
+    } else {
+      isDay = false;
     }
 
     hourElement[i].innerHTML = formatHHmm(hour, 0);
@@ -193,6 +287,18 @@ function displayHourlyForecast(response) {
       Math.round(result[i].main.temp_min),
       true
     );
+
+    if (isDay) {
+      weatherIconHourElement[i].className = `${formatDayWeatherIcon(
+        result[i].weather[0].main,
+        result[i].weather[0].description
+      )} weather-icon-hour`;
+    } else {
+      weatherIconHourElement[i].className = `${formatNightWeatherIcon(
+        result[i].weather[0].main,
+        result[i].weather[0].description
+      )} weather-icon-hour`;
+    }
   }
 
   showDailyForecast(city.coord.lat, city.coord.lon);
@@ -214,8 +320,10 @@ function displayDailyForecast(response) {
   let dayIncremental = 1;
   let forecastMaxTempElement = document.querySelectorAll(".tmp-high");
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
+  let weatherIconDayElement = document.querySelectorAll(".weather-icon-day");
 
   for (let i = 0; i < daily.length; i++) {
+    // the first data is about today, so need to skip
     if (i === 0) {
       continue;
     }
@@ -232,8 +340,6 @@ function displayDailyForecast(response) {
       today = 0;
     }
     dayElement[dayElementIndex].innerHTML = formatDay(dayIndex);
-    dayElementIndex++;
-    dayIncremental++;
 
     forecastMaxTempElement[tempIndex].innerHTML = appendDegreeSign(
       Math.round(daily[i].temp.max),
@@ -243,6 +349,14 @@ function displayDailyForecast(response) {
       Math.round(daily[i].temp.min),
       true
     );
+
+    weatherIconDayElement[dayElementIndex].className = `${formatDayWeatherIcon(
+      daily[i].weather[0].main,
+      daily[i].weather[0].description
+    )} weather-icon-day`;
+
+    dayElementIndex++;
+    dayIncremental++;
     tempIndex++;
   }
 }
