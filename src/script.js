@@ -217,13 +217,25 @@ function setCurrentWeather(response) {
   let currentWeatherElement = document.querySelector(".current-weather-text");
   currentWeatherElement.innerHTML = result.weather[0].main;
 
+  // current weather icon
+  let current = new Date();
+  let hour = getNextSlot(current.getHours());
+
   let currentWeatherIconElement = document.querySelector(
     ".weather-icon-current"
   );
-  currentWeatherIconElement.className = `${formatNightWeatherIcon(
-    result.weather[0].main,
-    result.weather[0].description
-  )} weather-icon-current`;
+
+  if (hour >= 6 && hour < 18) {
+    currentWeatherIconElement.className = `${formatDayWeatherIcon(
+      result.weather[0].main,
+      result.weather[0].description
+    )} weather-icon-current`;
+  } else {
+    currentWeatherIconElement.className = `${formatNightWeatherIcon(
+      result.weather[0].main,
+      result.weather[0].description
+    )} weather-icon-current`;
+  }
 
   let windSpeedElement = document.querySelector("#wind-speed");
   windSpeedElement.innerHTML = `${result.wind.speed}m/s`;
@@ -263,19 +275,12 @@ function displayHourlyForecast(response) {
   displayPrecipitation(result[0].pop);
 
   // display hourly forecast (every 3 hour)
-  let isDay = true;
   for (let i = 0; i < result.length; i++) {
     if (i > 0) {
       hour = hour + 3;
       if (hour === 24) {
         hour = 0;
       }
-    }
-
-    if (hour >= 6 && hour < 18) {
-      isDay = true;
-    } else {
-      isDay = false;
     }
 
     hourElement[i].innerHTML = formatHHmm(hour, 0);
@@ -288,7 +293,7 @@ function displayHourlyForecast(response) {
       true
     );
 
-    if (isDay) {
+    if (hour >= 6 && hour < 18) {
       weatherIconHourElement[i].className = `${formatDayWeatherIcon(
         result[i].weather[0].main,
         result[i].weather[0].description
