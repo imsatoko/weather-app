@@ -8,8 +8,7 @@ let units = "metric";
 function init() {
   let currentDate = document.querySelector("#current_date");
   currentDate.innerHTML = getCurrentDate();
-  showCurrentWeather("tokyo");
-  showHourlyForecast("tokyo");
+  showWeather("tokyo");
 }
 
 // get current date
@@ -145,6 +144,7 @@ function searchCurrentLocation(event) {
   event.preventDefault();
   navigator.geolocation.getCurrentPosition(showCurrentLocationWeather);
 
+  clearErrorMessage();
   resetUnit();
 }
 
@@ -157,7 +157,7 @@ function showCurrentLocationWeather(position) {
       `${apiEndpoint}/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
     )
     .then(displayCurrentLocationWeather)
-    .catch(errorMessage);
+    .catch(errorHandler);
 }
 
 // get current weather in a specific city
@@ -166,38 +166,42 @@ function search(event) {
 
   let cityName = document.querySelector("#city-input").value;
 
-  if (!cityName) {
-    alert("Please enter a city name.");
-  } else {
-    showCurrentWeather(cityName);
-    showHourlyForecast(cityName);
+  try {
+    if (cityName) {
+      showWeather(cityName);
+    } else {
+      throw new Error("Please input city name.");
+    }
+  } catch (error) {
+    showErrorMessage(error.message);
+    enableUnitButton(false);
   }
+}
 
+function showWeather(cityName) {
+  axios
+    .get(`${apiEndpoint}/weather?appid=${apiKey}&q=${cityName}&units=${units}`)
+    .then(showCurrentWeather)
+    .catch(errorHandler);
+
+  enableUnitButton(true);
+  clearErrorMessage();
   resetUnit();
 }
 
-function showCurrentWeather(cityName) {
-  axios
-    .get(`${apiEndpoint}/weather?appid=${apiKey}&q=${cityName}&units=${units}`)
-    .then(displayCurrentWeather)
-    .catch(errorMessage);
-}
-
 function displayCurrentLocationWeather(response) {
-  setCurrentWeather(response);
-
   let cityName = response.data.name;
-  showCurrentWeather(cityName);
-  showHourlyForecast(cityName);
+  showWeather(cityName);
 
   document.querySelector("#city-input").value = cityName;
 }
 
-function displayCurrentWeather(response) {
-  setCurrentWeather(response);
+function showCurrentWeather(response) {
+  displayCurrentWeather(response);
+  showForecast(response.data.name);
 }
 
-function setCurrentWeather(response) {
+function displayCurrentWeather(response) {
   let result = response.data;
 
   // city name
@@ -242,13 +246,13 @@ function setCurrentWeather(response) {
 }
 
 // forecast
-function showHourlyForecast(cityName) {
+function showForecast(cityName) {
   axios
     .get(
       `${apiEndpoint}/forecast?appid=${apiKey}&q=${cityName}&units=${units}&cnt=5`
     )
     .then(displayHourlyForecast)
-    .catch(errorMessage);
+    .catch(errorHandler);
 }
 
 function showDailyForecast(latitude, longitude) {
@@ -257,7 +261,7 @@ function showDailyForecast(latitude, longitude) {
       `${apiEndpoint}/onecall?appid=${apiKey}&lat=${latitude}&lon=${longitude}&exclude=current,minutely,hourly&units=${units}`
     )
     .then(displayDailyForecast)
-    .catch(errorMessage);
+    .catch(errorHandler);
 }
 
 function displayHourlyForecast(response) {
@@ -377,10 +381,6 @@ function getNextSlot(currentHour) {
   return nextSlot;
 }
 
-function errorMessage(error) {
-  alert("City doesn't exist. Please enter the appropriate city name.");
-}
-
 // get current temperature
 function getCurrentTemp() {
   let temp = document.querySelector(".current-temperature").innerHTML;
@@ -478,12 +478,24 @@ function changeUnit() {
     setCurrentTemp(currentTemp, true);
     setForecastTemp(forecastTemp, true);
   }
+
+  clearErrorMessage();
 }
 
 // reset unit to C°
 function resetUnit() {
   let unitButton = document.querySelector("#unit-button");
   unitButton.checked = false;
+}
+
+function enableUnitButton(isActive) {
+  let unitButton = document.querySelector("#unit-button");
+
+  if (isActive) {
+    unitButton.disabled = false;
+  } else {
+    unitButton.disabled = true;
+  }
 }
 
 // convert tempareture celcius <> farenheit
@@ -500,6 +512,31 @@ function appendDegreeSign(temp, isAppend) {
     return temp + "°";
   }
   return temp.slice(0, temp.length - 1);
+}
+
+// error handler
+function errorHandler(error) {
+  let status = error.response.status;
+
+  if (status == 404) {
+    try {
+      throw new Error("City is not found.");
+    } catch (error) {
+      showErrorMessage(error.message);
+    }
+  }
+
+  enableUnitButton(false);
+}
+
+function showErrorMessage(error) {
+  let errorElement = document.querySelector("#error-msg");
+  errorElement.innerHTML = error;
+}
+
+function clearErrorMessage() {
+  let errorElement = document.querySelector("#error-msg");
+  errorElement.innerHTML = "";
 }
 
 /** main */

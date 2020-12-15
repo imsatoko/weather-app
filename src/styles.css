@@ -14,8 +14,14 @@ body {
   padding: 15px 20px;
 }
 
+.error {
+  padding-left: 30px;
+  color: #ff2e63;
+  font-size: 14px;
+}
+
 .unit {
-  padding-top: 30px;
+  padding-top: 10px;
   padding-left: 30px;
 }
 
@@ -243,4 +249,5 @@ input:checked + .slider:before {
 .footer-link {
   margin-top: -45px;
   margin-left: 155px;
+  font-size: 14px;
 }
