@@ -156,7 +156,11 @@ function showCurrentLocationWeather(position) {
     .get(
       `${apiEndpoint}/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`
     )
-    .then(displayCurrentLocationWeather)
+    .then((response) => {
+      let cityName = response.data.name;
+      showWeather(cityName);
+      document.querySelector("#city-input").value = cityName;
+    })
     .catch(errorHandler);
 }
 
@@ -187,13 +191,6 @@ function showWeather(cityName) {
   enableUnitButton(true);
   clearErrorMessage();
   resetUnit();
-}
-
-function displayCurrentLocationWeather(response) {
-  let cityName = response.data.name;
-  showWeather(cityName);
-
-  document.querySelector("#city-input").value = cityName;
 }
 
 function showCurrentWeather(response) {
