@@ -148,6 +148,7 @@ input:checked + .slider:before {
 
 .current-weather-icon {
   padding: 0px;
+  text-align: center;
 }
 .weather-icon-current {
   font-size: 44px;

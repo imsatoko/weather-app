@@ -17,13 +17,14 @@ function getCurrentDate() {
 
   let day = formatDay(current.getDay());
   let month = formatMonth(current.getMonth());
-  let hhmm = formatHHmm(current.getHours(), current.getMinutes());
+  let hhmm = formatHour(current.getHours(), current.getMinutes());
 
   let currentDate = `${day} ${month} ${current.getDate()}, ${hhmm}`;
 
   return currentDate;
 }
 
+// format month
 function formatMonth(month) {
   let months = [
     "Jan",
@@ -43,13 +44,15 @@ function formatMonth(month) {
   return months[month];
 }
 
+// format day
 function formatDay(day) {
   let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   return days[day];
 }
 
-function formatHHmm(hour, minute) {
+// format hour
+function formatHour(hour, minute) {
   if (hour < 10) {
     hour = `0${hour}`;
   }
@@ -61,6 +64,7 @@ function formatHHmm(hour, minute) {
   return `${hour}:${minute}`;
 }
 
+// format weather icon for daytime (6am - 5pm)
 function formatDayWeatherIcon(main, description) {
   let icons = {
     "clear sky": "fas fa-sun",
@@ -75,25 +79,6 @@ function formatDayWeatherIcon(main, description) {
 
   if (!icon) {
     icon = formatDayWeatherIconMain(main);
-  }
-
-  return icon;
-}
-
-function formatNightWeatherIcon(main, description) {
-  let icons = {
-    "clear sky": "fas fa-moon",
-    "few clouds": "fas fa-cloud-moon",
-    "scattered clouds": "fas fa-cloud-moon",
-    "broken clouds": "fas fa-cloud",
-    "overcast clouds": "fas fa-cloud",
-    "freezing rain": "fas fa-snowflake",
-  };
-
-  icon = icons[description];
-
-  if (!icon) {
-    icon = formatNightWeatherIconMain(main);
   }
 
   return icon;
@@ -119,6 +104,26 @@ function formatDayWeatherIconMain(main) {
   return icons[main];
 }
 
+// format weather icon for nighttime (6pm - 5am)
+function formatNightWeatherIcon(main, description) {
+  let icons = {
+    "clear sky": "fas fa-moon",
+    "few clouds": "fas fa-cloud-moon",
+    "scattered clouds": "fas fa-cloud-moon",
+    "broken clouds": "fas fa-cloud",
+    "overcast clouds": "fas fa-cloud",
+    "freezing rain": "fas fa-snowflake",
+  };
+
+  icon = icons[description];
+
+  if (!icon) {
+    icon = formatNightWeatherIconMain(main);
+  }
+
+  return icon;
+}
+
 function formatNightWeatherIconMain(main) {
   let icons = {
     Rain: "fas fa-cloud-moon-rain",
@@ -139,11 +144,13 @@ function formatNightWeatherIconMain(main) {
   return icons[main];
 }
 
-// get current location weather
+// "Current" btn: search current location weather based on latitude and longitude
 function searchCurrentLocation(event) {
   event.preventDefault();
+
   navigator.geolocation.getCurrentPosition(showCurrentLocationWeather);
 
+  // reset
   clearErrorMessage();
   resetUnit();
 }
@@ -164,7 +171,7 @@ function showCurrentLocationWeather(position) {
     .catch(errorHandler);
 }
 
-// get current weather in a specific city
+// "Search" btn: search weather in a specific city
 function search(event) {
   event.preventDefault();
 
@@ -187,10 +194,6 @@ function showWeather(cityName) {
     .get(`${apiEndpoint}/weather?appid=${apiKey}&q=${cityName}&units=${units}`)
     .then(showCurrentWeather)
     .catch(errorHandler);
-
-  enableUnitButton(true);
-  clearErrorMessage();
-  resetUnit();
 }
 
 function showCurrentWeather(response) {
@@ -214,7 +217,7 @@ function displayCurrentWeather(response) {
   document.querySelector(".current-temperature-max span").innerHTML = maxTemp;
   document.querySelector(".current-temperature-min span").innerHTML = minTemp;
 
-  // current weather and wind speed(m/s)
+  // current weather text
   let currentWeatherElement = document.querySelector(".current-weather-text");
   currentWeatherElement.innerHTML = result.weather[0].main;
 
@@ -238,6 +241,7 @@ function displayCurrentWeather(response) {
     )} weather-icon-current`;
   }
 
+  // current wind speeed(m/s)
   let windSpeedElement = document.querySelector("#wind-speed");
   windSpeedElement.innerHTML = `${result.wind.speed}m/s`;
 }
@@ -284,7 +288,7 @@ function displayHourlyForecast(response) {
       }
     }
 
-    hourElement[i].innerHTML = formatHHmm(hour, 0);
+    hourElement[i].innerHTML = formatHour(hour, 0);
     forecastMaxTempElement[i].innerHTML = appendDegreeSign(
       Math.round(result[i].main.temp_max),
       true
@@ -365,6 +369,11 @@ function displayDailyForecast(response) {
     dayIncremental++;
     tempIndex++;
   }
+
+  // reset
+  enableUnitButton(true);
+  clearErrorMessage();
+  resetUnit();
 }
 
 function getNextSlot(currentHour) {
