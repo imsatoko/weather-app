@@ -4,13 +4,6 @@ const apiEndpoint = "https://api.openweathermap.org/data/2.5";
 let units = "metric";
 
 /** functions */
-// init
-function init() {
-  let currentDate = document.querySelector("#current_date");
-  currentDate.innerHTML = getCurrentDate();
-  showWeather("tokyo");
-}
-
 // get current date
 function getCurrentDate() {
   let current = new Date();
@@ -178,6 +171,11 @@ function animateImg(main) {
   );
 }
 
+// init
+function init() {
+  showWeather("tokyo");
+}
+
 // "Current" btn: search current location weather based on latitude and longitude
 function searchCurrentLocation(event) {
   event.preventDefault();
@@ -223,6 +221,7 @@ function search(event) {
   }
 }
 
+// weather main
 function showWeather(cityName) {
   axios
     .get(`${apiEndpoint}/weather?appid=${apiKey}&q=${cityName}&units=${units}`)
@@ -230,17 +229,22 @@ function showWeather(cityName) {
     .catch(errorHandler);
 }
 
+// current weather
 function showCurrentWeather(response) {
-  displayCurrentWeather(response);
+  setCurrentWeather(response);
   showForecast(response.data.name);
 }
 
-function displayCurrentWeather(response) {
+function setCurrentWeather(response) {
   let result = response.data;
 
   // city name
   document.querySelector("#current_city").innerHTML = result.name;
   document.querySelector("#city-input").value = result.name;
+
+  // current time
+  let currentDate = document.querySelector("#current_date");
+  currentDate.innerHTML = getCurrentDate();
 
   // current temperature
   let temp = appendDegreeSign(Math.round(result.main.temp), true);
@@ -260,9 +264,7 @@ function displayCurrentWeather(response) {
   currentWeatherElement.innerHTML = description;
 
   // current weather icon
-  let current = new Date();
-  let hour = getNextSlot(current.getHours());
-
+  let hour = new Date(result.dt * 1000).getHours();
   let currentWeatherIconElement = document.querySelector(
     ".weather-icon-current"
   );
@@ -293,7 +295,7 @@ function showForecast(cityName) {
     .get(
       `${apiEndpoint}/forecast?appid=${apiKey}&q=${cityName}&units=${units}&cnt=5`
     )
-    .then(displayHourlyForecast)
+    .then(setHourlyForecast)
     .catch(errorHandler);
 }
 
@@ -302,34 +304,28 @@ function showDailyForecast(latitude, longitude) {
     .get(
       `${apiEndpoint}/onecall?appid=${apiKey}&lat=${latitude}&lon=${longitude}&exclude=current,minutely,hourly&units=${units}`
     )
-    .then(displayDailyForecast)
+    .then(setDailyForecast)
     .catch(errorHandler);
 }
 
-function displayHourlyForecast(response) {
+function setHourlyForecast(response) {
   let result = response.data.list;
   let city = response.data.city;
 
-  let current = new Date();
-  let hour = getNextSlot(current.getHours());
   let hourElement = document.querySelectorAll(".hour");
   let forecastMaxTempElement = document.querySelectorAll(".tmp-high");
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
   let weatherIconHourElement = document.querySelectorAll(".weather-icon-hour");
 
   // display precipitation (precipitation[=pop] can get via "5 hours/3 days forecast" API)
-  displayPrecipitation(result[0].pop);
+  setPrecipitation(result[0].pop);
 
   // display hourly forecast (every 3 hour)
   for (let i = 0; i < result.length; i++) {
-    if (i > 0) {
-      hour = hour + 3;
-      if (hour === 24) {
-        hour = 0;
-      }
-    }
+    let hour = new Date(result[i].dt * 1000).getHours();
 
     hourElement[i].innerHTML = formatHour(hour, 0);
+
     forecastMaxTempElement[i].innerHTML = appendDegreeSign(
       Math.round(result[i].main.temp_max),
       true
@@ -355,20 +351,12 @@ function displayHourlyForecast(response) {
   showDailyForecast(city.coord.lat, city.coord.lon);
 }
 
-function displayPrecipitation(precipitation) {
-  let precipitationElement = document.querySelector("#precipitation");
-  precipitationElement.innerHTML = `${Math.round(precipitation * 10) * 10}%`;
-}
-
-function displayDailyForecast(response) {
+function setDailyForecast(response) {
   let daily = response.data.daily;
 
-  let current = new Date();
-  let today = current.getDay();
+  let dayElementIndex = 0;
   let tempIndex = 5;
   let dayElement = document.querySelectorAll(".day");
-  let dayElementIndex = 0;
-  let dayIncremental = 1;
   let forecastMaxTempElement = document.querySelectorAll(".tmp-high");
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
   let weatherIconDayElement = document.querySelectorAll(".weather-icon-day");
@@ -383,14 +371,8 @@ function displayDailyForecast(response) {
       break;
     }
 
-    let dayIndex = today + dayIncremental;
-    if (dayIndex > 6) {
-      // reset
-      dayIndex = 0;
-      dayIncremental = 0;
-      today = 0;
-    }
-    dayElement[dayElementIndex].innerHTML = formatDay(dayIndex);
+    let today = new Date(daily[i].dt * 1000).getDay();
+    dayElement[dayElementIndex].innerHTML = formatDay(today);
 
     forecastMaxTempElement[tempIndex].innerHTML = appendDegreeSign(
       Math.round(daily[i].temp.max),
@@ -407,7 +389,6 @@ function displayDailyForecast(response) {
     )} weather-icon-day`;
 
     dayElementIndex++;
-    dayIncremental++;
     tempIndex++;
   }
 
@@ -417,15 +398,9 @@ function displayDailyForecast(response) {
   resetUnit();
 }
 
-function getNextSlot(currentHour) {
-  let incremental = 3 - (currentHour % 3);
-
-  let nextSlot = currentHour + incremental;
-  if (nextSlot === 24) {
-    return 0;
-  }
-
-  return nextSlot;
+function setPrecipitation(precipitation) {
+  let precipitationElement = document.querySelector("#precipitation");
+  precipitationElement.innerHTML = `${Math.round(precipitation * 10) * 10}%`;
 }
 
 // get current temperature
