@@ -144,6 +144,40 @@ function formatNightWeatherIconMain(main) {
   return icons[main];
 }
 
+// animate background image
+function animateImg(main) {
+  // set current weather image
+  let currentWeatherImgElement = document.querySelector(".current-weather-img");
+  let currentElement = document.querySelector(".current");
+  currentElement.style.color = "#393b44";
+
+  if (main === "Clear") {
+    currentWeatherImgElement.src = "img/clear.jpg";
+  } else if (main === "Clouds") {
+    currentWeatherImgElement.src = "img/cloud.jpg";
+  } else if (main === "Snow") {
+    currentWeatherImgElement.src = "img/snow.jpg";
+  } else {
+    currentWeatherImgElement.src = "img/rain.jpg";
+    currentElement.style.color = "#f1f3f8";
+  }
+
+  // animate image
+  let imgWrapElement = document.querySelector(".img-wrap");
+
+  imgWrapElement.animate(
+    // keyframes
+    {
+      opacity: [0, 1],
+    },
+    // timing options
+    {
+      duration: 2000,
+      easing: "ease-in-out",
+    }
+  );
+}
+
 // "Current" btn: search current location weather based on latitude and longitude
 function searchCurrentLocation(event) {
   event.preventDefault();
@@ -217,9 +251,13 @@ function displayCurrentWeather(response) {
   document.querySelector(".current-temperature-max span").innerHTML = maxTemp;
   document.querySelector(".current-temperature-min span").innerHTML = minTemp;
 
+  // current weather
+  let main = result.weather[0].main;
+  let description = result.weather[0].description;
+
   // current weather text
   let currentWeatherElement = document.querySelector(".current-weather-text");
-  currentWeatherElement.innerHTML = result.weather[0].main;
+  currentWeatherElement.innerHTML = description;
 
   // current weather icon
   let current = new Date();
@@ -231,19 +269,22 @@ function displayCurrentWeather(response) {
 
   if (hour >= 6 && hour < 18) {
     currentWeatherIconElement.className = `${formatDayWeatherIcon(
-      result.weather[0].main,
-      result.weather[0].description
+      main,
+      description
     )} weather-icon-current`;
   } else {
     currentWeatherIconElement.className = `${formatNightWeatherIcon(
-      result.weather[0].main,
-      result.weather[0].description
+      main,
+      description
     )} weather-icon-current`;
   }
 
   // current wind speeed(m/s)
   let windSpeedElement = document.querySelector("#wind-speed");
   windSpeedElement.innerHTML = `${result.wind.speed}m/s`;
+
+  // animate background image
+  animateImg(main);
 }
 
 // forecast
