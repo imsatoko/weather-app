@@ -192,7 +192,7 @@ function animateImg(main) {
     },
     // timing options
     {
-      duration: 2000,
+      duration: 3000,
       easing: "ease-in-out",
     }
   );
