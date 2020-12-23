@@ -57,6 +57,33 @@ function formatHour(hour, minute) {
   return `${hour}:${minute}`;
 }
 
+// for OpenWeatherMap forecast data check
+function isToday(unixDt) {
+  let date = new Date();
+  let today = `${date.getFullYear()}${zeroPadding(
+    date.getMonth()
+  )}${zeroPadding(date.getDate())}`;
+
+  let tmp = new Date(unixDt * 1000);
+  let target = `${tmp.getFullYear()}${zeroPadding(tmp.getMonth())}${zeroPadding(
+    tmp.getDate()
+  )}`;
+
+  if (today === target) {
+    return true;
+  }
+
+  return false;
+}
+
+function zeroPadding(data) {
+  if (data < 10) {
+    data = `0${data}`;
+  }
+
+  return data;
+}
+
 // format weather icon for daytime (6am - 5pm)
 function formatDayWeatherIcon(main, description) {
   let icons = {
@@ -361,13 +388,15 @@ function setDailyForecast(response) {
   let forecastMinTempElement = document.querySelectorAll(".tmp-low");
   let weatherIconDayElement = document.querySelectorAll(".weather-icon-day");
 
+  let valid = isToday(daily[0].dt);
+
   for (let i = 0; i < daily.length; i++) {
-    // the first data is about today, so need to skip
-    if (i === 0) {
+    // if the first data is today, it's needed to skip
+    if (i === 0 && valid) {
       continue;
     }
 
-    if (i === 6) {
+    if ((i === 5 && !valid) || (i === 6 && valid)) {
       break;
     }
 
