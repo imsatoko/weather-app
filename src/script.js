@@ -168,8 +168,6 @@ function formatNightWeatherIconMain(main) {
 function animateImg(main) {
   // set current weather image
   let currentWeatherImgElement = document.querySelector(".current-weather-img");
-  let currentElement = document.querySelector(".current");
-  currentElement.style.color = "#393b44";
   currentWeatherImgElement.src = "";
 
   if (main === "Clear") {
@@ -178,9 +176,12 @@ function animateImg(main) {
     currentWeatherImgElement.src = "img/cloud.jpg";
   } else if (main === "Snow") {
     currentWeatherImgElement.src = "img/snow.jpg";
+  } else if (main === "Fog" || main === "Mist" || main === "Haze") {
+    currentWeatherImgElement.src = "img/fog.jpg";
+  } else if (main === "Thunderstorm") {
+    currentWeatherImgElement.src = "img/thunderstorm.jpg";
   } else {
     currentWeatherImgElement.src = "img/rain.jpg";
-    currentElement.style.color = "#f1f3f8";
   }
 
   // animate image
@@ -195,6 +196,7 @@ function animateImg(main) {
     {
       duration: 3000,
       easing: "ease-in-out",
+      fill: "forwards",
     }
   );
 }
