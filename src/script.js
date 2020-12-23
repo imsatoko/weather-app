@@ -170,6 +170,7 @@ function animateImg(main) {
   let currentWeatherImgElement = document.querySelector(".current-weather-img");
   let currentElement = document.querySelector(".current");
   currentElement.style.color = "#393b44";
+  currentWeatherImgElement.src = "";
 
   if (main === "Clear") {
     currentWeatherImgElement.src = "img/clear.jpg";
